@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".WeatherActivity">
+
+    <EditText
+        android:id="@+id/cityEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:hint="@string/city"
+        android:inputType="textShortMessage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/showWeather_Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="#81D4FA"
+        android:enabled="false"
+        android:onClick="onShowWeatherButtonClick"
+        android:padding="10dp"
+        android:text="@string/show_weather"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cityEditText" />
+
+    <TextView
+        android:id="@+id/cityTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:fontFamily="monospace"
+        android:textColor="#434040"
+        android:textSize="35sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/showWeather_Button"
+        tools:text="London"/>
+
+    <TextView
+        android:id="@+id/nowTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textSize="18sp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cityTextView"
+        android:text="@string/now"
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/icon1_ImageView"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/nowTextView"
+        tools:src="@android:drawable/ic_menu_info_details"/>
+
+    <TextView
+        android:id="@+id/temp1_TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textSize="25sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/icon1_ImageView"
+        tools:text="25°C" />
+
+    <TextView
+        android:id="@+id/day_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:textSize="18sp"
+        android:text="@string/day"
+        android:visibility="invisible"
+        tools:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/forecastTableLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TableLayout
+        android:id="@+id/forecastTableLayout"
+        android:layout_width="409dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="76dp"
+        android:shrinkColumns="*"
+        android:stretchColumns="*"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TableRow
+            android:id="@+id/time_TableRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:tag="time">
+
+            <TextView
+                android:id="@+id/time2_TextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="20sp"
+                tools:text="09:00"/>
+
+            <TextView
+                android:id="@+id/time3_TextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                tools:text="12:00"
+                android:textSize="20sp"/>
+
+            <TextView
+                android:id="@+id/time4_TextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                tools:text="15:00"
+                android:textSize="20sp"/>
+
+            <TextView
+                android:id="@+id/time5_TextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                tools:text="18:00"
+                android:textSize="20sp"/>
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/icon_TableRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:tag="icon">
+
+            <ImageView
+                android:id="@+id/icon2_ImageView"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/nowTextView"
+                tools:src="@android:drawable/ic_menu_info_details"/>
+
+            <ImageView
+                android:id="@+id/icon3_ImageView"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/nowTextView"
+                tools:src="@android:drawable/ic_menu_info_details"/>
+
+            <ImageView
+                android:id="@+id/icon4_ImageView"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/nowTextView"
+                tools:src="@android:drawable/ic_menu_info_details"/>
+
+            <ImageView
+                android:id="@+id/icon5_ImageView"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/nowTextView"
+                tools:src="@android:drawable/ic_menu_info_details"/>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/temp_TableRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:tag="temp">
+
+            <TextView
+                android:id="@+id/temp2_TextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="20sp"
+                tools:text="25°C"/>
+
+            <TextView
+                android:id="@+id/temp3_TextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                tools:text="25°C"
+                android:textSize="20sp"/>
+
+            <TextView
+                android:id="@+id/temp4_TextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                tools:text="25°C"
+                android:textSize="20sp"/>
+
+            <TextView
+                android:id="@+id/temp5_TextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                tools:text="25°C"
+                android:textSize="20sp"/>
+
+        </TableRow>
+
+    </TableLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
