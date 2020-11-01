@@ -10,7 +10,9 @@ public class Weather {
     private Date mDate;
     private int mTemp;
     private Bitmap mIcon;
-    private final String DATE_FORMAT = "HH:ss";
+    private final String DATE_FORMAT_TIME = "HH:ss";
+    private final String DATE_FORMAT_DAY_MONTH = "dd MMM";
+    private final String DATE_FORMAT_DAY = "dd";
 
     public Weather(String city, Date date, int temp, Bitmap icon) {
         this.city = city;
@@ -27,8 +29,16 @@ public class Weather {
         return mDate;
     }
 
-    public String getFormatDate(){
-        return DateFormat.format(DATE_FORMAT, mDate).toString();
+    public String getTime(){
+        return DateFormat.format(DATE_FORMAT_TIME, mDate).toString();
+    }
+
+    public int getDayOfMonth(){
+        return Integer.parseInt(DateFormat.format(DATE_FORMAT_DAY, mDate).toString());
+    }
+
+    public String getDayAndMonth(){
+        return DateFormat.format(DATE_FORMAT_DAY_MONTH, mDate).toString();
     }
 
     public int getTemp() {
@@ -37,15 +47,5 @@ public class Weather {
 
     public Bitmap getIcon() {
         return mIcon;
-    }
-
-    @Override
-    public String toString() {
-        return "Weather{" +
-                "city='" + city + '\'' +
-                ", mDate=" + DateFormat.format("HH:mm", mDate) +
-                ", mTemp=" + mTemp +
-                ", mIcon=" + mIcon +
-                '}';
     }
 }

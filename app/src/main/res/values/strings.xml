@@ -1,9 +1,10 @@
 <resources>
     <string name="app_name">Weather</string>
-    <string name="show_weather">Show Weather</string>
+    <string name="show_weather">Get</string>
     <string name="city">City</string>
     <string name="no_internet">No internet connection</string>
     <string name="now">Now</string>
     <string name="temp">%1$d°C</string>
-    <string name="day">Today</string>
+    <string name="today">Today</string>
+    <string name="tomorrow">Tomorrow</string>
 </resources>

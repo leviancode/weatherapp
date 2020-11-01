@@ -1,10 +1,20 @@
 package com.leviancode.weather;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -12,11 +22,11 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,7 +40,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -38,9 +47,10 @@ import java.util.concurrent.ExecutionException;
 
 /**
  *
- * Weather App
+ * Simple Weather App
  *
- * Takes the city name from user and shows the today weather from openweathermap.org
+ * Takes current user's position or the city name from user
+ * and shows 5day / 3hour weather forecast from openweathermap.org
  *
  */
 
@@ -56,16 +66,14 @@ public class WeatherActivity extends AppCompatActivity {
     private EditText mCityEditText;
     private ImageView mIconImageView;
     private Button mShowWeatherButton;
-    private TableRow mTimeTableRow;
-    private TableRow mIconTableRow;
-    private TableRow mTempTableRow;
+    private WeatherListFragment mWeatherList;
 
-    private List<Weather> mWeatherList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
         mCityTextView = findViewById(R.id.cityTextView);
         mNowTextView = findViewById(R.id.nowTextView);
@@ -74,11 +82,6 @@ public class WeatherActivity extends AppCompatActivity {
         mCityEditText = findViewById(R.id.cityEditText);
         mShowWeatherButton = findViewById(R.id.showWeather_Button);
         mIconImageView = findViewById(R.id.icon1_ImageView);
-
-        mTimeTableRow = findViewById(R.id.time_TableRow);
-        mIconTableRow = findViewById(R.id.icon_TableRow);
-        mTempTableRow = findViewById(R.id.temp_TableRow);
-        mWeatherList = new ArrayList<>();
 
         mCityEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -96,19 +99,67 @@ public class WeatherActivity extends AppCompatActivity {
 
             }
         });
+
+        createFragment();
+        loadWeather(getCurrentCity());
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+            loadWeather(getCurrentCity());
+        }
+    }
+
+    private String getCurrentCity(){
+        String result = "";
+
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        } else {
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            Location lastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+            Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+            try {
+                List<Address> addressList = geocoder.getFromLocation(lastLocation.getLatitude(), lastLocation.getLongitude(), 1);
+
+                if (addressList != null && addressList.size() > 0){
+                    Address address = addressList.get(0);
+                    result = address.getLocality();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
+
+    private void createFragment(){
+        FragmentManager fm = getSupportFragmentManager();
+        mWeatherList = new WeatherListFragment();
+        fm.beginTransaction()
+                    .replace(R.id.fragment_container, mWeatherList)
+                    .commit();
     }
 
     public void onShowWeatherButtonClick(View View){
         if (isNetworkAvailable()) {
             String city = mCityEditText.getText().toString().trim();
-            String readyApiCall = String.format(API_CALL, city);
-            new WeatherDataDownloader().execute(readyApiCall);
+            loadWeather(city);
 
             InputMethodManager manager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
             manager.hideSoftInputFromWindow(mCityEditText.getWindowToken(), 0);
         } else {
             Toast.makeText(this, R.string.no_internet, Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void loadWeather(String city){
+        String readyApiCall = String.format(API_CALL, city);
+        new WeatherDataDownloader().execute(readyApiCall);
     }
 
     private boolean isNetworkAvailable() {
@@ -119,8 +170,7 @@ public class WeatherActivity extends AppCompatActivity {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    private List<Weather> getForecastAndUpdateUI(String json) throws JSONException {
-        List<Weather> result = new ArrayList<>();
+    private void setForecast(String json) throws JSONException {
         JSONObject jsonObject = new JSONObject(json);
         String city = jsonObject.getJSONObject("city").getString("name");
         JSONArray jsonArray = jsonObject.getJSONArray("list");
@@ -139,13 +189,13 @@ public class WeatherActivity extends AppCompatActivity {
             } catch (ExecutionException | InterruptedException | ParseException e) {
                 e.printStackTrace();
             }
-            Weather weather = new Weather(city,date, temp, icon);
-            result.add(weather);
-            if (i < 5){
-                setForecast(weather, i);
+            Weather weather = new Weather(city, date, temp, icon);
+            if (i == 0){
+                setCurrentWeather(weather);
+            } else {
+                mWeatherList.insert(weather);
             }
         }
-        return result;
     }
 
     private void setCurrentWeather(Weather weather){
@@ -156,16 +206,6 @@ public class WeatherActivity extends AppCompatActivity {
 
         mNowTextView.setVisibility(View.VISIBLE);
         mDayTextView.setVisibility(View.VISIBLE);
-    }
-
-    private void setForecast(Weather weather, int index){
-        if (index == 0) {
-            setCurrentWeather(weather);
-        } else {
-            ((TextView)mTimeTableRow.getChildAt(index-1)).setText(weather.getFormatDate());
-            ((ImageView)mIconTableRow.getChildAt(index-1)).setImageBitmap(weather.getIcon());
-            ((TextView)mTempTableRow.getChildAt(index-1)).setText(getString(R.string.temp, weather.getTemp()));
-        }
     }
 
     private class WeatherDataDownloader extends AsyncTask<String,Void,String>{
@@ -198,7 +238,7 @@ public class WeatherActivity extends AppCompatActivity {
             super.onPostExecute(json);
 
             try {
-                mWeatherList = getForecastAndUpdateUI(json);
+                setForecast(json);
             } catch (JSONException e) {
                 e.printStackTrace();
                 Toast.makeText(WeatherActivity.this, "Incorrect city", Toast.LENGTH_LONG)
