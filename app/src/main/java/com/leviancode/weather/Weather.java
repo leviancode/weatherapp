@@ -6,7 +6,7 @@ import android.text.format.DateFormat;
 import java.util.Date;
 
 public class Weather {
-    private String city;
+    private String mCity;
     private Date mDate;
     private int mTemp;
     private Bitmap mIcon;
@@ -15,14 +15,14 @@ public class Weather {
     private final String DATE_FORMAT_DAY = "dd";
 
     public Weather(String city, Date date, int temp, Bitmap icon) {
-        this.city = city;
+        mCity = city;
         mDate = date;
         mTemp = temp;
         mIcon = icon;
     }
 
     public String getCity() {
-        return city;
+        return mCity;
     }
 
     public Date getDate() {

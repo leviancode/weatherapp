@@ -2,11 +2,9 @@ package com.leviancode.weather;
 
 import android.os.Bundle;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,10 +20,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class WeatherListFragment extends Fragment{
     private RecyclerView mWeatherRecyclerView;
-    private List<Weather> mWeatherList;
     private WeatherAdapter mWeatherAdapter;
     private TextView mDayTextView;
     private int mCurrentDay;
+    private WeatherDataController mWeatherDataController;
 
     @Nullable
     @Override
@@ -34,32 +32,57 @@ public class WeatherListFragment extends Fragment{
         mWeatherRecyclerView = view.findViewById(R.id.weather_recyclerView);
 
         mDayTextView = Objects.requireNonNull(getActivity()).findViewById(R.id.day_textView);
+        mWeatherDataController = WeatherDataController.getInstance();
 
-        mWeatherList = new ArrayList<>();
         mWeatherAdapter = new WeatherAdapter();
         mWeatherRecyclerView.setAdapter(mWeatherAdapter);
-        mWeatherRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-
-            }
-        });
 
         mCurrentDay = Integer.parseInt(DateFormat.format("dd", new Date()).toString());
 
         return view;
     }
 
-    public void insert(Weather weather) {
-        mWeatherList.add(weather);
-        mWeatherAdapter.notifyItemInserted(mWeatherList.size() - 1);
+    public void updateForecast(List<Weather> weatherList){
+        mWeatherAdapter.setWeatherList(weatherList);
+    }
+
+    private class WeatherAdapter extends RecyclerView.Adapter<WeatherHolder> {
+        private List<Weather> mWeatherList;
+
+        public WeatherAdapter() {
+            mWeatherList = new ArrayList<>();
+        }
+
+        public void setWeatherList(List<Weather> weatherList) {
+            mWeatherList = weatherList;
+            notifyDataSetChanged();
+        }
+
+        @NonNull
+        @Override
+        public WeatherHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+            return new WeatherHolder(layoutInflater, parent);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull WeatherHolder holder, int position) {
+            if (position < getItemCount()-1) {
+                Weather weather = mWeatherList.get(position+1);
+                holder.bind(weather);
+            }
+        }
+
+        @Override
+        public int getItemCount() {
+            return mWeatherList.size()-1;
+        }
     }
 
     private class WeatherHolder extends RecyclerView.ViewHolder {
-        private TextView mTimeTextView;
-        private TextView mTempTextView;
-        private ImageView mIconImageView;
+        private final TextView mTimeTextView;
+        private final TextView mTempTextView;
+        private final ImageView mIconImageView;
         private Weather mWeather;
 
         public WeatherHolder(LayoutInflater inflater, ViewGroup parent) {
@@ -70,7 +93,7 @@ public class WeatherListFragment extends Fragment{
             mIconImageView = itemView.findViewById(R.id.icon_ImageView);
         }
 
-        public void bind (Weather weather, int position){
+        public void bind (Weather weather){
             mWeather = weather;
 
             mTimeTextView.setText(mWeather.getTime());
@@ -90,24 +113,4 @@ public class WeatherListFragment extends Fragment{
 
     }
 
-    private class WeatherAdapter extends RecyclerView.Adapter<WeatherHolder> {
-
-        @NonNull
-        @Override
-        public WeatherHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-            return new WeatherHolder(layoutInflater, parent);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull WeatherHolder holder, int position) {
-            Weather weather = mWeatherList.get(position);
-            holder.bind(weather, position);
-        }
-
-        @Override
-        public int getItemCount() {
-            return mWeatherList.size();
-        }
-    }
 }

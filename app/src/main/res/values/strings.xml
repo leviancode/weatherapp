@@ -2,9 +2,23 @@
     <string name="app_name">Weather</string>
     <string name="show_weather">Get</string>
     <string name="city">City</string>
-    <string name="no_internet">No internet connection</string>
     <string name="now">Now</string>
     <string name="temp">%1$d°C</string>
     <string name="today">Today</string>
     <string name="tomorrow">Tomorrow</string>
+
+    <string name="menu_change_city">Change City</string>
+    <string name="menu_back_home">Back Home</string>
+    <string name="menu_refresh">Refresh</string>
+
+    <string name="dialog_getCity_title">Change the City</string>
+    <string name="dialog_getCity_message">Please enter the city name:</string>
+    <string name="dialog_button_ok">OK</string>
+    <string name="dialog_button_cancel">Cancel</string>
+
+    <string name="toast_access_denied">Unavailable current location, enter the city manually</string>
+    <string name="toast_incorrect_city">Incorrect city</string>
+    <string name="toast_no_internet">No internet connection</string>
+    <string name="search">Search</string>
+    <string name="search_hint">City</string>
 </resources>
